@@ -1007,6 +1007,44 @@ def main():
                             col_dl1, col_dl2 = st.columns(2)
                             
                             with col_dl1:
+                                try:
+                                    # JSON download
+                                    def serialize_receipt_info(obj):
+                                        if hasattr(obj, '__dict__'):
+                                            return obj.__dict__
+                                        return str(obj)
+                                    
+                                    json_output = json.dumps(result, indent=4, default=serialize_receipt_info)
+                                    
+                                    st.download_button(
+                                        label="📄 Download JSON",
+                                        data=json_output,
+                                        file_name=f"{base_name}_text.json",
+                                        mime="application/json",
+                                        key="download_json_with_receipt"
+                                    )
+                                except Exception as e:
+                                    st.error(f"Error preparing JSON download: {str(e)}")
+                            
+                            with col_dl2:
+                                try:
+                                    # Text download
+                                    st.download_button(
+                                        label="📝 Download Text",
+                                        data=text_output,
+                                        file_name=f"{base_name}_text.txt",
+                                        mime="text/plain",
+                                        key="download_text_with_receipt"
+                                    )
+                                except Exception as e:
+                                    st.error(f"Error preparing text download: {str(e)}")
+                    
+                    # Handle download section for both scenarios
+                    if not receipt_info:
+                        col_dl1, col_dl2 = st.columns(2)
+                        
+                        with col_dl1:
+                            try:
                                 # JSON download
                                 def serialize_receipt_info(obj):
                                     if hasattr(obj, '__dict__'):
@@ -1020,49 +1058,23 @@ def main():
                                     data=json_output,
                                     file_name=f"{base_name}_text.json",
                                     mime="application/json",
-                                    key="download_json"
+                                    key="download_json_no_receipt"
                                 )
-                            
-                            with col_dl2:
+                            except Exception as e:
+                                st.error(f"Error preparing JSON download: {str(e)}")
+                        
+                        with col_dl2:
+                            try:
                                 # Text download
                                 st.download_button(
                                     label="📝 Download Text",
                                     data=text_output,
                                     file_name=f"{base_name}_text.txt",
                                     mime="text/plain",
-                                    key="download_text"
+                                    key="download_text_no_receipt"
                                 )
-                    
-                    # Handle download section for both scenarios
-                    if not receipt_info:
-                        col_dl1, col_dl2 = st.columns(2)
-                        
-                        with col_dl1:
-                            # JSON download
-                            def serialize_receipt_info(obj):
-                                if hasattr(obj, '__dict__'):
-                                    return obj.__dict__
-                                return str(obj)
-                            
-                            json_output = json.dumps(result, indent=4, default=serialize_receipt_info)
-                            
-                            st.download_button(
-                                label="📄 Download JSON",
-                                data=json_output,
-                                file_name=f"{base_name}_text.json",
-                                mime="application/json",
-                                key="download_json"
-                            )
-                        
-                        with col_dl2:
-                            # Text download
-                            st.download_button(
-                                label="📝 Download Text",
-                                data=text_output,
-                                file_name=f"{base_name}_text.txt",
-                                mime="text/plain",
-                                key="download_text"
-                            )
+                            except Exception as e:
+                                st.error(f"Error preparing text download: {str(e)}")
                         
                         # Debug images download
                         if debug_mode and reader.debug_images:

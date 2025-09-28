@@ -642,9 +642,13 @@ class BatchReceiptProcessor:
         with col1:
             st.metric("Files Processed", results['processed_count'])
         with col2:
-            st.metric("Success Rate", f"{summary.get('extraction_success_rate', 0):.1%}")
+            success_rate = summary.get('extraction_success_rate', 0)
+            success_rate_str = f"{success_rate:.1%}" if success_rate is not None else "0.0%"
+            st.metric("Success Rate", success_rate_str)
         with col3:
-            st.metric("Total Amount", f"${summary.get('total_amount_found', 0):.2f}")
+            total_amount = summary.get('total_amount_found', 0)
+            total_amount_str = f"${total_amount:.2f}" if total_amount is not None else "$0.00"
+            st.metric("Total Amount", total_amount_str)
         with col4:
             st.metric("Unique Merchants", summary.get('unique_merchants', 0))
         
@@ -653,7 +657,9 @@ class BatchReceiptProcessor:
         with col1:
             st.metric("Items Extracted", summary.get('total_items_extracted', 0))
         with col2:
-            st.metric("Avg Processing Time", f"{summary.get('average_processing_time', 0):.2f}s")
+            avg_time = summary.get('average_processing_time', 0)
+            avg_time_str = f"{avg_time:.2f}s" if avg_time is not None else "0.00s"
+            st.metric("Avg Processing Time", avg_time_str)
         with col3:
             st.metric("Errors", results['error_count'])
         
@@ -685,18 +691,24 @@ class BatchReceiptProcessor:
                     col1, col2 = st.columns(2)
                     
                     with col1:
-                        st.text(f"Processing Time: {result.get('processing_time_seconds', 0):.2f}s")
+                        processing_time = result.get('processing_time_seconds', 0)
+                        processing_time_str = f"{processing_time:.2f}s" if processing_time is not None else "0.00s"
+                        st.text(f"Processing Time: {processing_time_str}")
                         
                         if receipt_info:
                             st.text(f"Merchant: {receipt_info.get('merchant_name', 'N/A')}")
                             st.text(f"Date: {receipt_info.get('transaction_date', 'N/A')}")
-                            st.text(f"Total: ${receipt_info.get('total', 0):.2f}")
+                            total = receipt_info.get('total', 0)
+                            total_str = f"${total:.2f}" if total is not None else "$0.00"
+                            st.text(f"Total: {total_str}")
                             st.text(f"Type: {receipt_info.get('receipt_type', 'N/A')}")
                     
                     with col2:
                         if receipt_info:
                             st.text(f"Items: {len(receipt_info.get('items', []))}")
-                            st.text(f"Confidence: {receipt_info.get('confidence_score', 0):.1%}")
+                            confidence = receipt_info.get('confidence_score', 0)
+                            confidence_str = f"{confidence:.1%}" if confidence is not None else "0.0%"
+                            st.text(f"Confidence: {confidence_str}")
                             st.text(f"Payment: {receipt_info.get('payment_method', 'N/A')}")
         
         with tab3:
@@ -738,12 +750,15 @@ class BatchReceiptProcessor:
             col1, col2 = st.columns(2)
             
             with col1:
-                st.download_button(
-                    label="📄 Download JSON",
-                    data=json_data,
-                    file_name=f"batch_results_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json",
-                    mime="application/json"
-                )
+                try:
+                    st.download_button(
+                        label="📄 Download JSON",
+                        data=json_data,
+                        file_name=f"batch_results_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json",
+                        mime="application/json"
+                    )
+                except Exception as e:
+                    st.error(f"Error preparing batch results download: {str(e)}")
             
             with col2:
                 st.download_button(
