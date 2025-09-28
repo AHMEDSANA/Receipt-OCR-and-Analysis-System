@@ -43,7 +43,7 @@ A comprehensive receipt processing system built with PaddleOCR, featuring intell
 
 1. **Clone the repository**
    ```bash
-   git clone [https://github.com/yourusername/receipt-ocr-system.git](https://github.com/AHMEDSANA/Receipt-OCR-and-Analysis-System.git)
+   git clone https://github.com/yourusername/receipt-ocr-system.git](https://github.com/AHMEDSANA/Receipt-OCR-and-Analysis-System.git
    cd receipt-ocr-system
    ```
 
